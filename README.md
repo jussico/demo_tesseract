@@ -2,7 +2,7 @@ Tesseract OCR demo
 ==================
 
 * convert .pdf files to images.
-* convert converted images to format x with tesseract. 
+* convert converted images to format x with tesseract.  
 TODO:
 * write results to database.
 * draw tesseract-recognized words and groups to images.
