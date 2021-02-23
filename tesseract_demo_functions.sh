@@ -37,7 +37,7 @@ function aika_nyt {
     yellow "aikaa kulunut: ${osa_minuutit}m ${osa_sekunnit}s"
 }
 dpi_resoluutio=600
-function create_xml {
+function image_to_tesseract {
 	filepath="$@"
 	green "input image file: $filepath"
 	file_dir=$(dirname "$filepath")
@@ -81,12 +81,12 @@ function handle_pdf {
 	image_output_path="$tiedostopolku" # withouth output_image
 	# parallel wants these exported
 	export image_output_path image_file_name
-	export -f create_xml blue
+	export -f image_to_tesseract blue
 	kuvia=$(find "$full_image_output_path" -name *.png | wc -l)
-	blue "converting ${kuvia} .png-files in ${full_image_output_path}/ to xml."
-	find "$full_image_output_path" -name *.png | parallel --bar create_xml {}
-	# find "$full_image_output_path" -name *.png | parallel --jobs 50% create_xml {}
-	blue "finished converting ${kuvia} .png-files to xml."
+	blue "converting ${kuvia} .png-files in ${full_image_output_path}/ to tesseract formats."
+	find "$full_image_output_path" -name *.png | parallel --bar image_to_tesseract {}
+	# find "$full_image_output_path" -name *.png | parallel --jobs 50% image_to_tesseract {}
+	blue "finished converting ${kuvia} .png-files to tesseract formats."
 
 	magenta "@END of handle_pdf"	
 	aika_nyt
