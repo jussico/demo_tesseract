@@ -42,11 +42,12 @@ function create_xml {
 	green "input image file: $filepath"
 	file_dir=$(dirname "$filepath")
 	file_name=$(basename "$filepath")
-	blue "output xml file: output_alto/${file_dir}/${file_name}.xml"
-	mkdir -p "output_alto/$file_dir"
+	output_types="alto hocr pdf tsv txt makebox"
+	blue "output files from tesseract: output_tesseract/${file_dir}/${file_name}.<type> in ($output_types)"
+	mkdir -p "output_tesseract/$file_dir"
 	OMP_THREAD_LIMIT=1 # for tesseract. they say only ~20% improvement with threads so disable them and use all CPUs with parallel.
 	export OMP_THREAD_LIMIT
-	tesseract "$@" "output_alto/$file_dir/$file_name" -l eng --dpi "$dpi_resoluutio" alto quiet
+	tesseract "$@" "output_tesseract/$file_dir/$file_name" -l eng --dpi "$dpi_resoluutio" $output_types quiet
 }
 function handle_pdf {
     aika_nyt
