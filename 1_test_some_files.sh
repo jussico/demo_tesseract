@@ -8,6 +8,6 @@ file3='testfiles/39 Geiser 2009.pdf' # small
 
 aseta_aika_alku
 
-handle_pdf "$file1" # works
-handle_pdf "$file2" # hidas
+#handle_pdf "$file1" # works
+#handle_pdf "$file2" # hidas
 handle_pdf "$file3" # works, small and fast
