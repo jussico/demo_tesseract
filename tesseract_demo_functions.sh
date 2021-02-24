@@ -42,7 +42,7 @@ function image_to_tesseract {
 	green "input image file: $filepath"
 	file_dir=$(dirname "$filepath")
 	file_name=$(basename "$filepath")
-	output_types="alto hocr pdf tsv txt makebox"
+	output_types="alto hocr pdf tsv txt makebox" # tsv = data in pytesseract ( image_to_data() )
 	blue "output files from tesseract: output_tesseract/${file_dir}/${file_name}.<type> in ($output_types)"
 	mkdir -p "output_tesseract/$file_dir"
 	OMP_THREAD_LIMIT=1 # for tesseract. they say only ~20% improvement with threads so disable them and use all CPUs with parallel.
