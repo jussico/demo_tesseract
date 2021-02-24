@@ -1,6 +1,12 @@
 -- common tables
 \! echo creating common tables
 
+DROP TABLE IF EXISTS tword;
+DROP TABLE IF EXISTS tline;
+DROP TABLE IF EXISTS tparagraph;
+DROP TABLE IF EXISTS tblock;
+DROP TABLE IF EXISTS tpage;
+
 DROP TABLE IF EXISTS document;
 
 CREATE TABLE document(
