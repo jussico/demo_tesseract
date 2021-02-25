@@ -40,7 +40,7 @@ dpi_resoluutio=600
 function image_to_tesseract {
 	filepath="$@"
 	green "input image file: $filepath"
-	file_dir=$(dirname "$filepath")
+	file_dir=$(dirname "$filepath" | sed "s/output_image\///" )
 	file_name=$(basename "$filepath")
 	output_types="alto hocr pdf tsv txt makebox" # tsv = data in pytesseract ( image_to_data() )
 	blue "output files from tesseract: output_tesseract/${file_dir}/${file_name}.<type> in ($output_types)"
@@ -55,7 +55,8 @@ function handle_pdf {
 	magenta "input pdf file: $tiedostopolku"
 	tiedosto_nimi=$(basename "$tiedostopolku")	
 	tiedosto_hakemisto=$(dirname "$tiedostopolku")
-	full_image_output_path="output_image/$tiedostopolku"
+	full_image_output_path="output_image/$tiedosto_nimi"
+	# full_image_output_path="output_image/$tiedostopolku"
 	green "output image filepath: ${full_image_output_path}/"
 	mkdir -p "$full_image_output_path"
     sivuja=$(qpdf --show-npages "$tiedosto_hakemisto/$tiedosto_nimi")
@@ -78,7 +79,8 @@ function handle_pdf {
 	green "parallel finished converting ${sivuja} pages to .png-files."
     echo "("$(aika_nyt)")"
 
-	image_output_path="$tiedostopolku" # withouth output_image
+	image_output_path="$tiedosto_nimi" # withouth output_image
+	# image_output_path="$tiedostopolku" # withouth output_image
 	# parallel wants these exported
 	export image_output_path image_file_name
 	export -f image_to_tesseract blue
