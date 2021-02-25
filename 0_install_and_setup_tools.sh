@@ -2,6 +2,8 @@
 
 # Ubuntu 20.04
 
+mkdir testfiles/
+
 sudo apt install tesseract-ocr
 
 sudo apt install imagemagick
@@ -16,8 +18,16 @@ tiedosto="/etc/ImageMagick-6/policy.xml"
 # disable this. this is security issue enabled which prevents doing anything..
 sudo sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="none" pattern="OHTU_PROJEKTI_DISABLED_PDF" \/>/'  "$tiedosto"
 
-# NOTE: looks like these are not needed when converting one-page-at-a-time.
+# NOTE: looks like these are not needed when converting one-page-at-a-time. 
+# NOTE: 600DPI seems to work with default settings.
+# NOTE: 1200DPI fails with errors:
+# convert-im6.q16: cache resources exhausted `output_image/testfiles/1305599480.pdf/1305599480.pdf-0.png' @ error/cache.c/OpenPixelCache/4083.
+# convert-im6.q16: memory allocation failed `output_image/testfiles/1305599480.pdf/1305599480.pdf-0.png' @ error/png.c/WriteOnePNGImage/9108.
+# convert-im6.q16: No IDATs written into file `output_image/testfiles/1305599480.pdf/1305599480.pdf-0.png' @ error/png.c/MagickPNGErrorHandler/1641.
+# TODO: don't care? 1200DPI not needed ever?
 
+
+# NOTE: these notes below are when trying to use convert without specifying one-page-at-a-time.
 # 1Gb to 16Gb disk memory limit. Peterson Field Guide to the Mammals_OCR.pdf fails with 1GiB.
 # sudo sed -i 's/<policy domain="resource" name="disk" value="1GiB"\/>/<policy domain="resource" name="disk" value="16GiB"\/>/'  "$tiedosto"
 
