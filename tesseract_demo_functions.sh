@@ -36,7 +36,8 @@ function aika_nyt {
     osa_minuutit=$((sekunteja / 60))
     yellow "aikaa kulunut: ${osa_minuutit}m ${osa_sekunnit}s"
 }
-dpi_resoluutio=600
+#dpi_resoluutio=300 # 31m 46s 16jobs 
+dpi_resoluutio=600 # 65m 42s 16jobs
 function image_to_tesseract {
 	filepath="$@"
 	green "input image file: $filepath"
