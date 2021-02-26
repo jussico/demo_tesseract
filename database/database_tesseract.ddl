@@ -7,8 +7,6 @@ DROP TABLE IF EXISTS tes_paragraph;
 DROP TABLE IF EXISTS tes_block;
 DROP TABLE IF EXISTS tes_page;
 
-DROP TABLE IF EXISTS tes_page;
-
 -- tsv level=1
 CREATE TABLE tes_page(
     gid INTEGER UNIQUE AUTO_INCREMENT, -- gid=generated id, for easy access
@@ -22,8 +20,6 @@ CREATE TABLE tes_page(
     CONSTRAINT FOREIGN KEY (document_id) REFERENCES document(id)
 );
 
-DROP TABLE IF EXISTS tes_block;
-
 -- tsv level=2
 CREATE TABLE tes_block(
     gid INTEGER UNIQUE AUTO_INCREMENT,
@@ -31,15 +27,13 @@ CREATE TABLE tes_block(
     page_id INTEGER NOT NULL,
     document_id INTEGER NOT NULL,
     vasen INTEGER NOT NULL,
-    tes_op INTEGER NOT NULL,
+    top INTEGER NOT NULL,
     width INTEGER NOT NULL,
     height INTEGER NOT NULL,
     CONSTRAINT PRIMARY KEY pk_tblock (id, page_id, document_id),
     CONSTRAINT FOREIGN KEY (page_id) REFERENCES tes_page(id),
     CONSTRAINT FOREIGN KEY (document_id) REFERENCES document(id)
 );
-
-DROP TABLE IF EXISTS tes_paragraph;
 
 -- tsv level=3
 CREATE TABLE tes_paragraph(
@@ -57,8 +51,6 @@ CREATE TABLE tes_paragraph(
     CONSTRAINT FOREIGN KEY (page_id) REFERENCES tes_page(id),
     CONSTRAINT FOREIGN KEY (document_id) REFERENCES document(id)
 );
-
-DROP TABLE IF EXISTS tes_line;
 
 -- tsv_sv level=4
 CREATE TABLE tes_line(
@@ -78,8 +70,6 @@ CREATE TABLE tes_line(
     CONSTRAINT FOREIGN KEY (page_id) REFERENCES tes_page(id),
     CONSTRAINT FOREIGN KEY (document_id) REFERENCES document(id)
 );
-
-DROP TABLE IF EXISTS tes_word;
 
 -- tsv level=5
 CREATE TABLE tes_word(
