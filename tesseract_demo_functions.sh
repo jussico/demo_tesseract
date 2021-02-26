@@ -49,7 +49,7 @@ function image_to_tesseract {
 	OMP_THREAD_LIMIT=1 # for tesseract. they say only ~20% improvement with threads so disable them and use all CPUs with parallel.
 	export OMP_THREAD_LIMIT
 	echo "************ PERSISTING TO DATABASE: $@.png"
-	sivunumero=$(echo $@ | awk -F'[-.]' '{print $4}')
+	sivunumero=$(echo $@ | sed 's/....$//' | awk -F'-' '{print $NF}' ) # | sed: remove last 4 characters | awk: split with '-' and print last column
 	python3 test_python/handle_image_with_tesseract.py "$@" $sivunumero
 
 	# tesseract "$@" "output_tesseract/$file_dir/$file_name" -l eng --dpi "$dpi_resoluutio" $output_types quiet
