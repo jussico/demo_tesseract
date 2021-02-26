@@ -48,7 +48,11 @@ function image_to_tesseract {
 	mkdir -p "output_tesseract/$file_dir"
 	OMP_THREAD_LIMIT=1 # for tesseract. they say only ~20% improvement with threads so disable them and use all CPUs with parallel.
 	export OMP_THREAD_LIMIT
-	tesseract "$@" "output_tesseract/$file_dir/$file_name" -l eng --dpi "$dpi_resoluutio" $output_types quiet
+	echo "************ PERSISTING TO DATABASE: $@.png"
+	sivunumero=$(echo $@ | awk -F'[-.]' '{print $4}')
+	python3 test_python/handle_image_with_tesseract.py "$@" $sivunumero
+
+	# tesseract "$@" "output_tesseract/$file_dir/$file_name" -l eng --dpi "$dpi_resoluutio" $output_types quiet
 }
 function handle_pdf {
     aika_nyt
