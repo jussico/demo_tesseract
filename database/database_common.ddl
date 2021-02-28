@@ -1,11 +1,11 @@
 -- common tables
 \! echo creating common tables
 
-DROP TABLE IF EXISTS tword;
-DROP TABLE IF EXISTS tline;
-DROP TABLE IF EXISTS tparagraph;
-DROP TABLE IF EXISTS tblock;
-DROP TABLE IF EXISTS tpage;
+DROP TABLE IF EXISTS tes_word;
+DROP TABLE IF EXISTS tes_line;
+DROP TABLE IF EXISTS tes_paragraph;
+DROP TABLE IF EXISTS tes_block;
+DROP TABLE IF EXISTS tes_page;
 
 DROP TABLE IF EXISTS document;
 

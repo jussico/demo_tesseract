@@ -15,15 +15,19 @@ file6='testfiles/714 Caro, TM 2003.pdf'
 file7='testfiles/Books/Gardner_Mammals of South America Vol 1-Marsupials Xenarthrans Shrews and Bats.pdf'
 file8='testfiles/Mammalian Species/836.pdf'
 
+file9='testfiles/Strasser-1992-American_Journal_of_Physical_Anthropology.pdf'
+
+
 aseta_aika_alku
 
 #handle_pdf "$file1" # works
 # handle_pdf "$file2" # hidas
-#handle_pdf "$file3" # works, small and fast
+  handle_pdf "$file3" # works, small and fast
 # handle_pdf "$file4" # 
 # handle_pdf "$file5" # 
 # handle_pdf "$file6" # 
 
-# 
-handle_pdf "$file7" # 
-handle_pdf "$file8" # 
+# # 
+# handle_pdf "$file7" # 
+# handle_pdf "$file8" # 
+#handle_pdf "$file9" # 

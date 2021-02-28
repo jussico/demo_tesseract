@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 import os
-os.environ['OMP_THREAD_LIMIT'] = '1'    # TODO: toimiiko? tarvii olla ennen tesseract importteja?
+os.environ['OMP_THREAD_LIMIT'] = '1'    # ACTUALLY WORKS. MUST BE SET BEFORE TESSERACT IMPORTS.
+# TODO: not needed? 
 # os.environ["OMP_NUM_THREADS"]= '1'
 # os.environ["OMP_THREAD_LIMIT"] = '1'
 # os.environ["MKL_NUM_THREADS"] = '1'
@@ -27,15 +28,12 @@ page_id=sys.argv[2]
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path, verbose=True)
 
-# print(f'minä olen {os.getenv("USER")}')
-
-# create database connection # TODO: use pool?
 connection = pymysql.connect(host=os.getenv("DATABASE_HOST"),
                          user=os.getenv("DATABASE_USER"),
                          password=os.getenv("DATABASE_PASSWORD"),
                          db=os.getenv("DATABASE_NAME")
                          )
-connection.autocommit(True) # TODO: to autocommit or not?
+# connection.autocommit(True) # TODO: to autocommit or not?
 cursor=connection.cursor()
 
 def persist_document(image_file):
@@ -47,16 +45,9 @@ def persist_document(image_file):
 
 document_id = persist_document(image_file)
 
-
-# TODO: dpi, language, OMP_THREAD_LIMIT
-
-tesserakti.OMP_THREAD_LIMIT=1   # TODO: testaa
-
 data=tesserakti.image_to_data(image_file, output_type=Output.DATAFRAME, config="--dpi 600 -l eng")
 
-data.fillna(value="", inplace=True) # replace NaN words with "" TODO: drop these? or something?
-
-# print(repr(data))
+data.fillna(value="", inplace=True) # replace NaN words with "" TODO: drop these? or something? TODO: tsekkaa
 
 common_columns="vasen, top, width, height"
 
@@ -98,7 +89,7 @@ for row in data.itertuples(index = True, name ='Area'):
     if (tyyppi == 5):
         persist_word(row)
 
-# connection.commit()
+connection.commit() # TODO: autocommit or not?
 connection.close()
 
-print("DONE.")
+print(f"tesseract text and structures recognized from '{image_file}' and persisted to database done.")
