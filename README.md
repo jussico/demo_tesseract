@@ -3,9 +3,10 @@ Tesseract OCR demo
 
 * convert .pdf files to images.
 * recognize text and structure from converted images with tesseract and write results to database.  
+* load data from database.  
 TODO:
-* load data from database.
 * draw tesseract-recognized words and structures to images.
+* test some text analysis library and save results to database and draw these too.
 
 Usage
 =====
@@ -16,11 +17,9 @@ Ubuntu 20.04
 
 1. bash 0_install_and_setup_tools.sh  
 
-2. bash 1_create_database.sh 
- 
-3. copy some pdf-files to testfiles/  
+2. copy some pdf-files to testfiles/  
 
-4. ( to run single pdfs modify and run: bash 1_test_some_files.sh )  
+3. ( to run single pdfs modify and run: bash 1_test_some_files.sh )  
 
-5. to run all pdf files run bash 2_convert_all_pdfs.sh  
+4. to run all pdf files run bash 2_convert_all_pdfs.sh  
 
