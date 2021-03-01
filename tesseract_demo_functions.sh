@@ -6,11 +6,20 @@ function aseta_aika_alku {
 }
 
 # https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
+
+# tput colors # gives a count
+
+# if (( $(tput colors) > 2 ));
+# then
+#       echo "We have many colors!"
+#       for c in $(seq 0 $(tput colors)); do tput setaf $c; printf $c; done; echo
+# fi
+
 default="$(tput sgr 0)"
 red="$(tput setaf 1)"
 green="$(tput setaf 2)"
 blue="$(tput setaf 4)"
-lightblue="$(tput setaf 6)" # white?
+lightblue="$(tput setaf 12)" # white?
 yellow="$(tput setaf 3)"
 magenta="$(tput setaf 5)"
 
@@ -23,6 +32,9 @@ function green {
 function blue {
     printf "${blue}$@${default}\n"
 }
+# function light_blue {
+#     printf "${light_blue}$@${default}\n" # white ??
+# }
 function yellow {
     printf "${yellow}$@${default}\n"
 }
