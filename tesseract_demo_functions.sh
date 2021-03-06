@@ -50,7 +50,8 @@ function aika_nyt {
 }
 dpi_resoluutio=600 # TODO: maybe environment-variable? from database?
 function image_to_tesseract {
-	filepath="$@"
+	document_id=$1
+	filepath="$2"
 	green "input image file: '$filepath'"
 	file_dir=$(dirname "$filepath" | sed "s/output_image\///" )
 	file_name=$(basename "$filepath")
@@ -59,17 +60,22 @@ function image_to_tesseract {
 	mkdir -p "output_tesseract/$file_dir"
 	# set in python-script now.
 	# export OMP_THREAD_LIMIT
+	echo "@image_to_tesseract KAIKKIARGUMENTIT: ${@}"
 	sivunumero=$(echo $@ | sed 's/....$//' | awk -F'-' '{print $NF}' ) # | sed: remove last 4 characters | awk: split with '-' and print last column
-	python3 tesseract_recognize_text_and_structure_from_image_and_persist_to_database.py "$@" $sivunumero
+	python3 tesseract_recognize_text_and_structure_from_image_and_persist_to_database.py $document_id "$filepath" $sivunumero
 	# tesseract "$@" "output_tesseract/$file_dir/$file_name" -l eng --dpi "$dpi_resoluutio" $output_types quiet
 }
 function handle_pdf {
     aika_nyt
-	tiedostopolku="$1"
+	dokumentti_id=$1
+	tiedostopolku=$(mysql -N $DATABASE_NAME -e "select concat('media_files/pdf/', sha1sum, '/', filename) from pdf_document where id = ${dokumentti_id}")
+	echo "dokumentti-id: ${dokumentti_id}"
 	magenta "BEGINNING handling '$tiedostopolku'"
 	tiedosto_nimi=$(basename "$tiedostopolku")	
 	tiedosto_hakemisto=$(dirname "$tiedostopolku")
-	full_image_output_path="output_image/$tiedosto_nimi"
+	full_image_output_path="$tiedosto_hakemisto/page_png/"
+	mkdir -p "$full_image_output_path"
+	# full_image_output_path="output_image/$tiedosto_nimi"
 	echo "output image filepath: '${full_image_output_path}/'"
 	mkdir -p "$full_image_output_path"
     sivuja=$(qpdf --show-npages "$tiedosto_hakemisto/$tiedosto_nimi")
@@ -83,11 +89,11 @@ function handle_pdf {
 	export full_image_output_path tiedosto_nimi dpi_resoluutio tiedosto_hakemisto
 	export -f pdf_to_images
 
-	cores_to_use=$(nproc)
 	echo "parallel running on maximum number of cores (including hyperthreads): $cores_to_use"
-	echo $(printf 'CPU %.0s' $(seq 1 $cores_to_use))' :)'
+	echo $(printf 'CPU %.0s' $(seq 1 $PARALLEL_JOBS))' :)'
 	green "BEGINNING converting ${sivuja} pages of '${tiedosto_nimi}' to .png-files."
-	seq 0 $((sivuja-1)) | parallel --bar pdf_to_images {}
+	echo "PARALLEL_JOBS=${PARALLEL_JOBS}"
+	seq 0 $((sivuja-1)) | parallel --jobs $PARALLEL_JOBS --bar pdf_to_images {}
 	green "FINISHED converting ${sivuja} pages to .png-files."
     echo "("$(aika_nyt)")"
 
@@ -97,7 +103,8 @@ function handle_pdf {
 	export -f image_to_tesseract blue
 	kuvia=$(find "$full_image_output_path" -name *.png | wc -l)
 	blue "BEGINNING handling ${kuvia} .png-files in '${full_image_output_path}/' with tesseract and persisting to database."
-	find "$full_image_output_path" -name *.png | parallel --bar image_to_tesseract {}
+
+	find "$full_image_output_path" -name *.png | parallel --jobs $PARALLEL_JOBS --bar image_to_tesseract $dokumentti_id "{}"
 	# find "$full_image_output_path" -name *.png | parallel --jobs 50% image_to_tesseract {}
 	blue "FINISHED handling ${kuvia} .png-files in ${full_image_output_path}/ with tesseract and persisting to database."
 

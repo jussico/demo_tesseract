@@ -5,34 +5,105 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wildchild.settings') # wildchil
 django.setup()
 
 import sys
-from tesserakti.models import TesWord
+from tesserakti.models import Word, Page, Block, Paragraph, Line
+from pdf.models import Document
+from shutil import copy
+import cv2
 
 document_id=sys.argv[1]
 print(f'BEGINNING DRAW of id {document_id}')
 # print("The arguments are: " , str(sys.argv))
-# print(f'saatiin argumentti page_id:{document_id}')
 
-# TODO: hae kaikki tiedot kaikista tauluista ja piirrä.
+# figure out file prefix.
+dokumentti = Document.objects.get(id=document_id)
+tiedosto_prefix=f'media_files/pdf/{dokumentti.sha1sum}/page_png/{dokumentti.filename}'
 
-sql=f'select * from tes_word where document_id={document_id} order by line_id, id limit 20'
-print(f"luetaan tietokannasta: {sql}")
-for word in TesWord.objects.raw(sql):
-    print(word.text, word.vasen, word.top, word.width, word.height)
+# draw blocks
+sql=f'select * from pdf_document where pdf_document.id={document_id}'
+for dokumentti in Document.objects.raw(sql).iterator():
+    sql2=f'select * from tes_page where \
+        document_id={document_id} order by page_id'
+    for sivu in Page.objects.raw(sql2).iterator():
+        sql_word=f'select * from tes_block where \
+            document_id={document_id} and \
+            page_id={sivu.page_id} \
+                order by block_id'
+        tiedosto_final=f"../{tiedosto_prefix}-{sivu.page_id}.png"
+        tiedosto_final_new_copy=f"../{tiedosto_prefix}-{sivu.page_id}-tesseract-6-blocks.png"
+        copy(tiedosto_final, tiedosto_final_new_copy)
+        new_image = cv2.imread(f'{tiedosto_final_new_copy}')
+        for alue in Block.objects.raw(sql_word).iterator():
+            draw_color= (255, 0, 255)# BGR, Blue-Green-Red
+            cv2.rectangle(new_image, 
+                    (alue.vasen, alue.top), 
+                    (alue.vasen + alue.width, alue.top + alue.height), 
+                    draw_color, 2) 
+        cv2.imwrite(tiedosto_final_new_copy, new_image)
+
+# draw paragraphs
+sql=f'select * from pdf_document where pdf_document.id={document_id}'
+for dokumentti in Document.objects.raw(sql).iterator():
+    sql2=f'select * from tes_page where \
+        document_id={document_id} order by page_id'
+    for sivu in Page.objects.raw(sql2).iterator():
+        sql_word=f'select * from tes_paragraph where \
+            document_id={document_id} and \
+            page_id={sivu.page_id} \
+                order by paragraph_id'
+        tiedosto_final=f"../{tiedosto_prefix}-{sivu.page_id}.png"
+        tiedosto_final_new_copy=f"../{tiedosto_prefix}-{sivu.page_id}-tesseract-3-paragraphs.png"
+        copy(tiedosto_final, tiedosto_final_new_copy)
+        new_image = cv2.imread(f'{tiedosto_final_new_copy}')
+        for alue in Paragraph.objects.raw(sql_word).iterator():
+            draw_color= (255, 0, 0)# BGR, Blue-Green-Red# loop all pages
+            cv2.rectangle(new_image, 
+                    (alue.vasen, alue.top), 
+                    (alue.vasen + alue.width, alue.top + alue.height), 
+                    draw_color, 2) 
+        cv2.imwrite(tiedosto_final_new_copy, new_image)
+
+# draw lines
+sql=f'select * from pdf_document where pdf_document.id={document_id}'
+for dokumentti in Document.objects.raw(sql).iterator():
+    sql2=f'select * from tes_page where \
+        document_id={document_id} order by page_id'
+    for sivu in Page.objects.raw(sql2).iterator():
+        sql_word=f'select * from tes_line where \
+            document_id={document_id} and \
+            page_id={sivu.page_id} \
+                order by line_id'
+        tiedosto_final=f"../{tiedosto_prefix}-{sivu.page_id}.png"
+        tiedosto_final_new_copy=f"../{tiedosto_prefix}-{sivu.page_id}-tesseract-2-lines.png"
+        copy(tiedosto_final, tiedosto_final_new_copy)
+        new_image = cv2.imread(f'{tiedosto_final_new_copy}')
+        for alue in Line.objects.raw(sql_word).iterator():
+            draw_color= (0, 255, 0)# BGR, Blue-Green-Red
+            cv2.rectangle(new_image, 
+                    (alue.vasen, alue.top), 
+                    (alue.vasen + alue.width, alue.top + alue.height), 
+                    draw_color, 2) 
+        cv2.imwrite(tiedosto_final_new_copy, new_image)
+
+# draw words
+sql=f'select * from pdf_document where pdf_document.id={document_id}'
+for dokumentti in Document.objects.raw(sql).iterator():
+    sql2=f'select * from tes_page where \
+        document_id={document_id} order by page_id'
+    for sivu in Page.objects.raw(sql2).iterator():
+        sql_word=f'select * from tes_word where \
+            document_id={document_id} and \
+            page_id={sivu.page_id} \
+                order by word_id'
+        tiedosto_final=f"../{tiedosto_prefix}-{sivu.page_id}.png"
+        tiedosto_final_new_copy=f"../{tiedosto_prefix}-{sivu.page_id}-tesseract-1-words.png"
+        copy(tiedosto_final, tiedosto_final_new_copy)
+        new_image = cv2.imread(f'{tiedosto_final_new_copy}')
+        for alue in Word.objects.raw(sql_word).iterator():
+            draw_color= (0, 0, 255)# BGR, Blue-Green-Red
+            cv2.rectangle(new_image, 
+                    (alue.vasen, alue.top), 
+                    (alue.vasen + alue.width, alue.top + alue.height), 
+                    draw_color, 2) 
+        cv2.imwrite(tiedosto_final_new_copy, new_image)
 
 print(f'ENDING DRAW of id {document_id}')
-'''
-CREATE TABLE tes_word(
-    gid INTEGER UNIQUE AUTO_INCREMENT,
-    id INTEGER NOT NULL,
-    line_id INTEGER NOT NULL,
-    paragraph_id INTEGER NOT NULL,
-    block_id INTEGER NOT NULL,
-    page_id INTEGER NOT NULL,
-    document_id INTEGER NOT NULL,
-    vasen INTEGER NOT NULL,
-    top INTEGER NOT NULL,
-    width INTEGER NOT NULL,
-    height INTEGER NOT NULL,
-    conf INTEGER NOT NULL,
-    text VARCHAR(1000) NOT NULL,
-'''

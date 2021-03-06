@@ -12,19 +12,19 @@ source .env
 alku=$(pwd)
 
 # delete previous installs
-rm -rf "./$CREATED_DJANGO_PROJECT"
+rm -rf "./wildchild"
 
 # create new project
-$(django-admin startproject "$CREATED_DJANGO_PROJECT")
+$(django-admin startproject "wildchild")
 
-cd $CREATED_DJANGO_PROJECT
+cd wildchild
 
 # create app
-CREATED_APP_NAME="tesserakti"
-python manage.py startapp "$CREATED_APP_NAME"
+python manage.py startapp "tesserakti"
+python manage.py startapp "pdf"
 
 # set up database
-tiedosto=$CREATED_DJANGO_PROJECT/settings.py
+tiedosto=wildchild/settings.py
 sed -i "s/'ENGINE': 'django.db.backends.sqlite3'/'ENGINE': 'django.db.backends.mysql'/" $tiedosto
 sed -i "s/\
         'NAME': BASE_DIR \/ 'db.sqlite3',/\
@@ -44,17 +44,24 @@ sed -i "s/TIME_ZONE = 'UTC'/TIME_ZONE = 'Europe\/Helsinki'/" $tiedosto
 blue "${tiedosto}:" && cat $tiedosto | grep TIME_ZONE
 
 # create django models for tesseract-tables
-echo "overwriting empty $$CREATED_APP_NAME/models.py with tesseract-tables models."
-python3 manage.py inspectdb > "$CREATED_APP_NAME/models.py"
-echo "$CREATED_DJANGO_PROJECT/$CREATED_APP_NAME/models.py:"
-cat "$CREATED_APP_NAME/models.py"
+echo "overwriting empty tesserakti/models.py with tesseract-tables models."
+python3 manage.py inspectdb page block paragraph line word > "tesserakti/models.py"
+echo "wildchild/tesserakti/models.py:"
+cat "tesserakti/models.py"
+
+# create pdf project document-table model
+echo "overwriting empty pdf/models.py with tesseract-tables models."
+python3 manage.py inspectdb document > "pdf/models.py"
+echo "wildchild/pdf/models.py:"
+cat "pdf/models.py"
 
 # add app to INSTALLED_APPS
-tiedosto=$CREATED_DJANGO_PROJECT/settings.py
+tiedosto=wildchild/settings.py
 sed -i "s/\
 INSTALLED_APPS = \[/\
 INSTALLED_APPS = \[\n\
-    'tesserakti',/" $tiedosto
+    'tesserakti',\n\
+    'pdf',\n/" $tiedosto
 blue "${tiedosto}:" && cat $tiedosto | grep -A 8 INSTALLED_APPS
 
 # copy script to run in this django project root.

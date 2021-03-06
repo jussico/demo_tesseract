@@ -12,6 +12,10 @@ sudo apt install qpdf
 
 sudo apt install parallel
 
+# python
+pip3 install pytesseract Pillow opencv-python
+
+
 # fix ImageMagick
 tiedosto="/etc/ImageMagick-6/policy.xml"
 
