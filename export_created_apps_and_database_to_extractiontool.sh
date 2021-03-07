@@ -39,6 +39,6 @@ source .env
 python3 manage.py makemigrations
 python3 manage.py migrate
 
-mysqldump $DATABASE_TO_DUMP_FROM pdf_document tes_page tes_block tes_paragraph tes_line tes_word > dumppi.txt
+mysqldump $DATABASE_TO_DUMP_FROM pdf_document pdf_documentowner tes_page tes_block tes_paragraph tes_line tes_word > dumppi.txt
 
 mysql $DATABASE_NAME < dumppi.txt

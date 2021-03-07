@@ -78,7 +78,10 @@ function handle_pdf {
 	# full_image_output_path="output_image/$tiedosto_nimi"
 	echo "output image filepath: '${full_image_output_path}/'"
 	mkdir -p "$full_image_output_path"
-    sivuja=$(qpdf --show-npages "$tiedosto_hakemisto/$tiedosto_nimi")
+	# let it fail. (  714 Caro, TM 2003.pdf )
+	set +e
+    sivuja=$(qpdf --show-npages "$tiedosto_hakemisto/$tiedosto_nimi" 2>>errors.log.txt)
+	set -e
 	export -f green
 	function pdf_to_images {
 		i=$1
