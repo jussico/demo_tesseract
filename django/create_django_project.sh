@@ -49,13 +49,13 @@ python3 manage.py inspectdb page block paragraph line word > "tesserakti/models.
 echo "wildchild/tesserakti/models.py:"
 cat "tesserakti/models.py"
 
-# create pdf project document-table model
+# create django models for pdf-project-tables
 echo "overwriting empty pdf/models.py with tesseract-tables models."
-python3 manage.py inspectdb document > "pdf/models.py"
+python3 manage.py inspectdb document document_owner process_type process > "pdf/models.py"
 echo "wildchild/pdf/models.py:"
 cat "pdf/models.py"
 
-# add app to INSTALLED_APPS
+# add apps to INSTALLED_APPS
 tiedosto=wildchild/settings.py
 sed -i "s/\
 INSTALLED_APPS = \[/\

@@ -27,18 +27,24 @@ cd wildchild
 sed -i 's/managed = False/managed = True/g' "tesserakti/models.py"
 sed -i 's/managed = False/managed = True/g' "pdf/models.py"
 
-# fix some errors in django-created definitions.
-sed -i 's/id = models.AutoField(unique=True)/id = models.AutoField(primary_key=True)/g' "tesserakti/models.py"
-sed -i 's/_id = models.IntegerField(primary_key=True)/_id = models.IntegerField(db_index=True)/g' "tesserakti/models.py"
+# add index to all id-fields
+sed -i 's/_id = models.IntegerField()/_id = models.IntegerField(db_index=True)/g' "tesserakti/models.py"
 
-# remove all foreign-keys and turn them to just integer-fields.
-sed -i 's/\( *\)\(.*\)\( = models.\)\(ForeignKey.*\)/\1\2_id \3IntegerField(db_index=True)/' "tesserakti/models.py"
+# also add index to all non-id integer-fields. ( maybe useful )
+sed -i 's/ = models.IntegerField()/ = models.IntegerField(db_index=True)/g' "tesserakti/models.py"
 
-# remove unique together-definitions ( natural primary key ) TODO: add later manually maybe
-sed -i 's/.*unique_together.*//g' "tesserakti/models.py"
+# index for text-field ( = word )
+sed -i 's/models.CharField(max_length=200)/models.CharField(max_length=200, db_index=True)/g' "tesserakti/models.py"
 
 # rename tables with tes_ prefix in tesserakti-project
 sed -i "s/\(db_table = '\)\(.*$\)/\1tes_\2/g" "tesserakti/models.py" 
+
+# set DateTimeFields to current date
+
+sed -i 's/from django.db import models/from django.db import models\nfrom django.utils import timezone\nimport pytz/g' "tesserakti/models.py" 
+sed -i 's/from django.db import models/from django.db import models\nfrom django.utils import timezone\nimport pytz/g' "pdf/models.py" 
+sed -i 's/models.DateTimeField()/models.DateTimeField(default=timezone.now)/g' "tesserakti/models.py" 
+sed -i 's/models.DateTimeField()/models.DateTimeField(default=timezone.now)/g' "pdf/models.py" 
 
 # delete table link in pdf-project
 sed -i 's/db_table = .*$//g' "pdf/models.py" 

@@ -6,7 +6,7 @@ django.setup()
 
 import sys
 from tesserakti.models import Word, Page, Block, Paragraph, Line
-from pdf.models import Document
+from pdf.models import Document, DocumentOwner
 from shutil import copy
 import cv2
 
@@ -17,6 +17,10 @@ print(f'BEGINNING DRAW of id {document_id}')
 # figure out file prefix.
 dokumentti = Document.objects.get(id=document_id)
 tiedosto_prefix=f'media_files/pdf/{dokumentti.sha1sum}/page_png/{dokumentti.filename}'
+
+# insert line to document_owner table
+downer = DocumentOwner(document_id=dokumentti.id, owner_id=1)
+downer.save()
 
 # draw blocks
 sql=f'select * from pdf_document where pdf_document.id={document_id}'

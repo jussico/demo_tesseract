@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS tes_page;
 
 -- tsv level=1
 CREATE TABLE page(
-    id INTEGER UNIQUE AUTO_INCREMENT, -- id=generated id, for easy access
+    id INTEGER PRIMARY KEY AUTO_INCREMENT, -- id=generated id, for easy access
     page_id INTEGER NOT NULL,
     document_id INTEGER NOT NULL,
     vasen INTEGER NOT NULL, 
@@ -17,15 +17,22 @@ CREATE TABLE page(
     width INTEGER NOT NULL,
     height INTEGER NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT PRIMARY KEY pk_tpage (page_id, document_id),
-    CONSTRAINT FOREIGN KEY (document_id) REFERENCES document(id),
-    INDEX (page_id),
-    INDEX (document_id)
+    CONSTRAINT UNIQUE pk_tpage (page_id, document_id)
+    -- django generates foreign keys wrong and removes _id from names which is all wrong..
+    /* ,
+    CONSTRAINT FOREIGN KEY (document_id) REFERENCES document(id) */
+    -- django just ignores INDEX-definitions..
+    /* INDEX (page_id), 
+    INDEX (document_id),
+    INDEX (vasen),
+    INDEX (top),
+    INDEX (width),
+    INDEX (height) */
 );
 
 -- tsv level=2
 CREATE TABLE block(
-    id INTEGER UNIQUE AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     block_id INTEGER NOT NULL,
     page_id INTEGER NOT NULL,
     document_id INTEGER NOT NULL,
@@ -34,13 +41,14 @@ CREATE TABLE block(
     width INTEGER NOT NULL,
     height INTEGER NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,    
-    CONSTRAINT PRIMARY KEY pk_tblock (block_id, page_id, document_id),
-    CONSTRAINT FOREIGN KEY (page_id, document_id) REFERENCES page(page_id, document_id)
+    CONSTRAINT UNIQUE pk_tblock (block_id, page_id, document_id)
+    /* ,
+    CONSTRAINT FOREIGN KEY (page_id, document_id) REFERENCES page(page_id, document_id) */
 );
 
 -- tsv level=3
 CREATE TABLE paragraph(
-    id INTEGER UNIQUE AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     paragraph_id INTEGER NOT NULL,
     block_id INTEGER NOT NULL,
     page_id INTEGER NOT NULL,
@@ -50,13 +58,14 @@ CREATE TABLE paragraph(
     width INTEGER NOT NULL,
     height INTEGER NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,    
-    CONSTRAINT PRIMARY KEY pk_tparagraph (paragraph_id, block_id, page_id, document_id),
-    CONSTRAINT FOREIGN KEY (block_id, page_id, document_id) REFERENCES block(block_id, page_id, document_id)
+    CONSTRAINT UNIQUE pk_tparagraph (paragraph_id, block_id, page_id, document_id)
+    /* ,
+    CONSTRAINT FOREIGN KEY (block_id, page_id, document_id) REFERENCES block(block_id, page_id, document_id) */
 );
 
 -- tsv_sv level=4
 CREATE TABLE `line`(
-    id INTEGER UNIQUE AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     line_id INTEGER NOT NULL,
     paragraph_id INTEGER NOT NULL,
     block_id INTEGER NOT NULL,
@@ -67,13 +76,14 @@ CREATE TABLE `line`(
     width INTEGER NOT NULL,
     height INTEGER NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,    
-    CONSTRAINT PRIMARY KEY pk_tline (line_id, paragraph_id, block_id, page_id, document_id),
-    CONSTRAINT FOREIGN KEY (paragraph_id, block_id, page_id, document_id) REFERENCES paragraph(paragraph_id, block_id, page_id, document_id)
+    CONSTRAINT UNIQUE pk_tline (line_id, paragraph_id, block_id, page_id, document_id)
+    /* ,
+    CONSTRAINT FOREIGN KEY (paragraph_id, block_id, page_id, document_id) REFERENCES paragraph(paragraph_id, block_id, page_id, document_id) */
 );
 
 -- tsv level=5
 CREATE TABLE word(
-    id INTEGER UNIQUE AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     word_id INTEGER NOT NULL,
     line_id INTEGER NOT NULL,
     paragraph_id INTEGER NOT NULL,
@@ -87,7 +97,8 @@ CREATE TABLE word(
     conf INTEGER NOT NULL,
     text VARCHAR(200) NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,    
-    CONSTRAINT PRIMARY KEY pk_tline (word_id, line_id, paragraph_id, block_id, page_id, document_id),
-    CONSTRAINT FOREIGN KEY (line_id, paragraph_id, block_id, page_id, document_id) REFERENCES `line`(line_id, paragraph_id, block_id, page_id, document_id)
+    CONSTRAINT UNIQUE pk_tline (word_id, line_id, paragraph_id, block_id, page_id, document_id)
+    /* ,
+    CONSTRAINT FOREIGN KEY (line_id, paragraph_id, block_id, page_id, document_id) REFERENCES `line`(line_id, paragraph_id, block_id, page_id, document_id) */
 );
 
