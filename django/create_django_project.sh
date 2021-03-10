@@ -4,8 +4,6 @@ set -e
 
 # https://docs.djangoproject.com/en/3.1/intro/tutorial01/
 
-sudo apt install python-is-python3
-
 source tesseract_demo_functions.sh
 source .env
 
@@ -20,8 +18,8 @@ $(django-admin startproject "wildchild")
 cd wildchild
 
 # create app
-python manage.py startapp "tesserakti"
-python manage.py startapp "pdf"
+python3 manage.py startapp "tesserakti"
+python3 manage.py startapp "pdf"
 
 # set up database
 tiedosto=wildchild/settings.py
