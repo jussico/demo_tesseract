@@ -102,3 +102,9 @@ CREATE TABLE word(
     CONSTRAINT FOREIGN KEY (line_id, paragraph_id, block_id, page_id, document_id) REFERENCES `line`(line_id, paragraph_id, block_id, page_id, document_id) */
 );
 
+-- ALTER TABLE COMMANDS TO ADD TO MANUALLY CRAFTED MIGRATION-FILE:
+/* ALTER TABLE tes_page ADD CONSTRAINT FOREIGN KEY tes_page (document_id) REFERENCES pdf_document (id) ;
+ALTER TABLE tes_block ADD CONSTRAINT FOREIGN KEY tes_block (page_id, document_id) REFERENCES tes_page(page_id, document_id);
+ALTER TABLE tes_paragraph ADD CONSTRAINT FOREIGN KEY (block_id, page_id, document_id) REFERENCES tes_block(block_id, page_id, document_id);
+ALTER TABLE tes_line ADD CONSTRAINT FOREIGN KEY (paragraph_id, block_id, page_id, document_id) REFERENCES tes_paragraph(paragraph_id, block_id, page_id, document_id);
+ALTER TABLE tes_word ADD CONSTRAINT FOREIGN KEY (line_id, paragraph_id, block_id, page_id, document_id) REFERENCES tes_line(line_id, paragraph_id, block_id, page_id, document_id); */
